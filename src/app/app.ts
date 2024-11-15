@@ -1,8 +1,14 @@
 import express, { NextFunction, Request, Response } from "express";
 const app = express();
 
-// parses
+// parsers
 app.use(express.json());
+
+// logger
+const logger = (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.url);
+  next();
+};
 
 const userRouter = express.Router();
 const userCourses = express.Router();
@@ -32,20 +38,42 @@ userCourses.post("/create-course", (req: Request, res: Response) => {
   });
 });
 
-const logger = (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.url);
-  next();
-};
+app.get(
+  "/",
+  logger,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.send("something");
+    } catch (error) {
+      next(error);
+      // res.status(400).json({
+      //   success: false,
+      //   message: "failed to get data",
+      // });
+    }
+  }
+);
 
-app.get("/", logger, (req: Request, res: Response) => {
-  res.send("Hello World");
-});
-
-app.post("/", (req: Request, res: Response) => {
-  console.log(req.body);
+app.post("/", logger, (req: Request, res: Response) => {
   res.json({
     message: "successfully received data",
   });
+});
+
+app.all("*", (req: Request, res: Response) => {
+  res.status(400).json({
+    success: false,
+    message: "Route is not found",
+  });
+});
+// global error handler
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  if (error) {
+    res.status(400).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
 });
 
 export default app;
