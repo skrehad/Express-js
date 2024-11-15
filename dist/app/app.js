@@ -60,6 +60,7 @@ app.post("/", logger, (req, res) => {
         message: "successfully received data",
     });
 });
+// for route error when type habijavi path
 app.all("*", (req, res) => {
     res.status(400).json({
         success: false,

@@ -60,6 +60,7 @@ app.post("/", logger, (req: Request, res: Response) => {
   });
 });
 
+// for route error when type habijavi path
 app.all("*", (req: Request, res: Response) => {
   res.status(400).json({
     success: false,
